@@ -45,11 +45,16 @@ def almacenar_bd():
                  EQUIPO_VISITANTE TEXT NOT NULL,
                  GOL_LOCAL INT NOT NULL,
                  GOL_VISITANTE INT NOT NULL,
+                 GOLEADORES_LOCAL TEXT,
+                 GOLEADORES_VISITANTE TEXT,
                  ENLACE TEXT NOT NULL
                 )''')
     for i in extraer_jornadas(enlace):
-        conn.execute("""INSERT INTO PARTIDOS VALUES (?,?,?,?,?,?)""",
-                     (i['jornada'], i['equipo_local'], i['equipo_visitante'], i['goles']['local'], i['goles']['visitante'], i['enlace']))
+        goleadores = extraer_goleadores(i['enlace'])
+        conn.execute("""INSERT INTO PARTIDOS VALUES (?,?,?,?,?,?,?,?)""",
+                     (i['jornada'], i['equipo_local'], i['equipo_visitante'], i['goles']['local'],
+                      i['goles']['visitante'], ', '.join(goleadores['Local']),
+                      ', '.join(goleadores['Visitante']), i['enlace']))
     conn.commit()
     cursor = conn.execute("SELECT COUNT(*) FROM PARTIDOS")
     messagebox.showinfo("Base Datos",
@@ -144,19 +149,38 @@ def extraer_goleadores(enlace):
     goleadores = {"Local": [], "Visitante": []}
     equipo_local = soup.find("div", class_=["is-local"])
     goleadores_local = equipo_local.find("div", class_=["scr-hdr__scorers"])
-    for goleador in goleadores_local.children:
-        if goleador == "red-card":
-            continue
+    for goleador in goleadores_local.find_all("span", class_=None):
         goleadores["Local"].append(goleador.get_text(strip=True).replace(',', ''))
     equipo_visitante = soup.find("div", class_=["is-visitor"])
     goleadores_visitante = equipo_visitante.find("div", class_=["scr-hdr__scorers"])
-    for goleador in goleadores_visitante.children:
-        if goleador.class_ == "red-card":
-            continue
-        print(goleador.class_)
+    for goleador in goleadores_visitante.find_all("span", class_=None):
         goleadores["Visitante"].append(goleador.get_text(strip=True).replace(',', ''))
-
     return goleadores
+
+def buscar_goleadores():
+    ventana = tk.Toplevel()
+    tk.Label(ventana, text="Número de jornada:").pack()
+    jornada = tk.Entry(ventana)
+    jornada.pack()
+    tk.Label(ventana, text="Equipo local:").pack()
+    equipo_local = tk.Entry(ventana)
+    equipo_local.pack()
+    tk.Button(ventana, text="Buscar", 
+              command=lambda: listar_goleadores(jornada.get(), equipo_local.get())).pack()
+
+def listar_goleadores(jornada, equipo_local):
+    conn = sqlite3.connect('1\\jornadas.db')
+    cursor = conn.execute("SELECT EQUIPO_LOCAL, GOLEADORES_LOCAL, EQUIPO_VISITANTE, GOLEADORES_VISITANTE FROM PARTIDOS WHERE JORNADA=? AND EQUIPO_LOCAL=?", (jornada, equipo_local))
+    goleadores = cursor.fetchone()
+    conn.close()
+    if goleadores:
+        goleadores_local = goleadores[1] if goleadores[1] else ""
+        goleadores_visitante = goleadores[3] if goleadores[3] else ""
+        messagebox.showinfo("Goleadores", f"Goleadores del partido:\n\n"
+                                          f"{goleadores[0]}: {goleadores_local}\n"
+                                          f"{goleadores[2]}: {goleadores_visitante}")
+    else:
+        messagebox.showwarning("Error", f"No se encontró el partido de local del {equipo_local} para la jornada {jornada}.")
 
 def ventana_principal():
     root = tk.Tk()
@@ -173,12 +197,10 @@ def ventana_principal():
     menubar.add_separator()
     menubar.add_command(label="Estadísticas Jornadas", command=buscar_estadisticas_jornada)
     menubar.add_separator()
-    menubar.add_command(label="Buscar Goles", command="")
+    menubar.add_command(label="Buscar Goles", command=buscar_goleadores)
 
     root.config(menu=menubar)
     root.mainloop()
 
-print(extraer_goleadores(extraer_jornadas(enlace)[1]['enlace']))
-
-# if __name__ == "__main__":
-#     ventana_principal()
+if __name__ == "__main__":
+    ventana_principal()
