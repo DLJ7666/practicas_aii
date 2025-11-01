@@ -188,7 +188,7 @@ def buscar_por_numero_jugadores():
     ventana = tk.Toplevel()
     ventana.title("Búsqueda por Jugadores")
     label = tk.Label(ventana, text="Introduzca el número de jugadores:")
-    la.pack(side=tk.LEFT)
+    label.pack(side=tk.LEFT)
     en = tk.Entry(ventana)
     en.bind("<Return>", mostrar_lista)
     en.pack(side=tk.LEFT)
