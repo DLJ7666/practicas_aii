@@ -9,8 +9,9 @@ from bs4 import BeautifulSoup
 from whoosh.fields import DATETIME, KEYWORD, NUMERIC, TEXT, Schema
 from whoosh.index import create_in, open_dir
 from whoosh.qparser import QueryParser
+from whoosh.query import Every
 
-indexdir = "practicas\\whoosh\\4\\indexdir"
+indexdir = "practicas\\practicas_aii\\whoosh\\4\\indexdir"
 enlace="https://www.recetasgratis.net/Recetas-de-Aperitivos-tapas-listado_receta-1_"
 meses = {
     "enero": "01", "febrero": "02", "marzo": "03", "abril": "04",
@@ -91,7 +92,6 @@ def almacenar_esquema(num_pags):
     writer = ix.writer()
     i=0
     for receta in lista_recetas:
-        print(receta)
         writer.add_document(titulo=str(receta[0]), num_comensales=int(str(receta[1])),
                             autor=str(receta[2]), fecha=receta[3],
                             caracteristicas=str(receta[4]), introduccion=str(receta[5]))
@@ -122,17 +122,23 @@ def listar_recetas(recetas):
     sc.pack(side=tk.RIGHT, fill=tk.Y)
     lb = tk.Listbox(v, width=150, yscrollcommand=sc.set)
     for r in recetas:
-        s = 'RECETA: ' + r["titulo"]
+        s = r["titulo"]
         lb.insert(tk.END, s)
         lb.insert(tk.END, "-" * 120)
         s = ("     COMENSALES: " + str(r["num_comensales"]) +
              " | AUTOR: " + str(r["autor"]) +
-             " | FECHA ACT.: " + str(r["fecha_formateada"]) +
+             " | FECHA ACT.: " + str(r["fecha"]) +
              " | CARACTERÍSTICAS: " + (r["caracteristicas"] if r["caracteristicas"] else "—"))
         lb.insert(tk.END, s)
         lb.insert(tk.END, "\n")
     lb.pack(side=tk.LEFT, fill=tk.BOTH)
     sc.config(command=lb.yview)
+
+def listar_todas():
+    ix = open_dir(indexdir)
+    with ix.searcher() as searcher:
+        results = searcher.search(Every(), limit=None)
+        listar_recetas(results)
 
 # def buscar_por_fecha():
 #     def ddmmyyyy_a_yyyymmdd_int(txt):
@@ -182,6 +188,7 @@ def ventana_principal():
     #DATOS
     menudatos = tk.Menu(menu, tearoff=0)
     menudatos.add_command(label="Cargar", command=cargar)
+    menudatos.add_command(label="Listar", command=listar_todas)
     menudatos.add_separator()
     menudatos.add_command(label="Salir", command=raiz.quit)
     menu.add_cascade(label="Datos", menu=menudatos)
