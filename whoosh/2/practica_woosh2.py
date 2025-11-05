@@ -8,7 +8,7 @@ from whoosh.index import create_in, open_dir
 from whoosh.qparser import QueryParser
 import os, shutil
 
-indexdir = "practicas\\whoosh\\2\\indexdir"
+indexdir = "practicas\\practicas_aii\\whoosh\\2\\indexdir"
 enlace="https://zacatrus.es/juegos-de-mesa.html?p="
 
 def extraer_urls(num_pags):
