@@ -138,7 +138,7 @@ def eliminar_por_resumen():
     def modificar(event):
         ix=open_dir(indexdir)
         with ix.searcher() as searcher:
-            query = QueryParser("descripcion", ix.schema).parse(str(en.get()))
+            query = QueryParser("resumen", ix.schema).parse(str(text.get()))
             results = searcher.search(query, limit=None)
             if len(results) > 0: # si hay algún documento a borrar
                 v = tk.Toplevel()
