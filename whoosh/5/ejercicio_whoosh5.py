@@ -111,7 +111,7 @@ def listar_todas():
 def buscar_por_autor():
     def buscar():
         with ix.searcher() as searcher:
-            entry = text.get()
+            entry = '"' + text.get().strip() + '"'
             print(entry)
             query = QueryParser("autor", schema=ix.schema).parse(entry)
             results = searcher.search(query, limit=None)
@@ -119,10 +119,10 @@ def buscar_por_autor():
             
     def listar_autores():
         with ix.searcher() as searcher:
-            results = searcher.search(Every("autor"), limit=None)
+            results = searcher.lexicon("autor")
             autores = set()
             for r in results:
-                autores.add(r["autor"])
+                autores.add(r.decode('utf-8'))
             return sorted(autores)
 
     ix = open_dir(indexdir)
@@ -135,43 +135,67 @@ def buscar_por_autor():
     button.pack(side=tk.LEFT)
 
 def eliminar_por_resumen():
-    resultados_a_eliminar = []
-    def buscar(event):
+    def modificar(event):
+        ix=open_dir(indexdir)
         with ix.searcher() as searcher:
-            entry = text.get()
-            query = QueryParser("resumen", schema=ix.schema).parse(entry)
+            query = QueryParser("descripcion", ix.schema).parse(str(en.get()))
             results = searcher.search(query, limit=None)
-            if len(results) > 0:
-                resultados_a_eliminar = results
-            listar_titulos(results)
+            if len(results) > 0: # si hay algún documento a borrar
+                v = tk.Toplevel()
+                v.title("Listado de Noticias a Borrar")
+                v.geometry('800x150')
+                sc = tk.Scrollbar(v)
+                sc.pack(side=tk.RIGHT, fill=tk.Y)
+                lb = tk.Listbox(v, yscrollcommand=sc.set)
+                lb.pack(side=tk.BOTTOM, fill = tk.BOTH)
+                sc.config(command = lb.yview)
+                for r in results:
+                    lb.insert(tk.END,r['titulo'])
+                    lb.insert(tk.END,'')
+                # pedimos confirmación
+                respuesta = messagebox.askyesno(title="Confirmar",message="Esta seguro que quiere eliminar estas noticias?")
+                if respuesta:
+                    writer = ix.writer()
+                    writer.delete_by_query(query)
+                    writer.commit()
+            else:
+                messagebox.showinfo("AVISO", "No hay ninguna noticia con esas palabras en la descripción")
 
-    def listar_titulos(resultados):
-        v = tk.Toplevel()
-        v.title("Listado de títulos a eliminar")
-        sc = tk.Scrollbar(v)
-        sc.pack(side=tk.RIGHT, fill=tk.Y)
-        lb = tk.Listbox(v, width=150, yscrollcommand=sc.set)
-        for r in resultados:
-            lb.insert(tk.END, r["titulo"])
-            lb.insert(tk.END, "-" * 120)
-        lb.pack(side=tk.LEFT, fill=tk.BOTH)
-        sc.config(command=lb.yview)
-        tk.Button(v, text="Confirmar", command=eliminar).pack(side=tk.BOTTOM)
-
-    def eliminar():
-        with ix.writer() as writer:
-            for r in resultados_a_eliminar:
-                writer.delete_by_term('titulo', r['titulo'])
-        messagebox.showinfo("Eliminación completa", f"Se han eliminado {len(resultados_a_eliminar)} noticias.")
-
-    ix = open_dir(indexdir)
     ventana = tk.Toplevel()
     ventana.title("Eliminar por resumen")
     label = tk.Label(ventana,text="Introduzca el texto a buscar en el resumen:")
     label.pack()
     text = tk.Entry(ventana, width=90)
     text.pack(side=tk.LEFT)
-    text.bind("<Return>", buscar)
+    text.bind("<Return>", modificar)
+
+
+def buscar_fecha_y_titulo():
+    def mostrar_lista():
+        ix=open_dir(indexdir)
+        with ix.searcher() as searcher:
+            s = re.compile('\d{8}').match(str(en.get()))
+            if s:
+                query = QueryParser("titulo", ix.schema).parse('fecha:['+ str(en.get()) +' TO] '+ str(en1.get()))
+                results = searcher.search(query,limit=None)
+                listar_noticias(results)
+            else:
+                messagebox.showerror("ERROR", "formato de fecha incorrecto AAAAMMDD")
+    
+    v = tk.Toplevel()
+    v.title("Búsqueda por Fecha y Título")
+    l = tk.Label(v, text="Escriba una fecha (AAAAMMDD):")
+    l.pack(side=tk.LEFT)
+    en = tk.Entry(v)
+    en.pack(side=tk.LEFT)
+    
+    l1 = tk.Label(v, text="Escriba palabras del título:")
+    l1.pack(side=tk.LEFT)
+    en1 = tk.Entry(v, width=75)
+    en1.pack(side=tk.LEFT)
+    
+    b = tk.Button(v, text="Buscar", command=mostrar_lista)
+    b.pack(side=tk.LEFT)
 
 def ventana_principal():
     raiz = tk.Tk()
@@ -189,6 +213,7 @@ def ventana_principal():
     menubuscar = tk.Menu(menu, tearoff=0)
     menubuscar.add_command(label="Autor", command=buscar_por_autor)
     menubuscar.add_command(label="Eliminar por resumen", command=eliminar_por_resumen)
+    menubuscar.add_command(label="Fecha y título", command=buscar_fecha_y_titulo)
     menu.add_cascade(label="Buscar", menu=menubuscar)
     raiz.config(menu=menu)
 
