@@ -8,7 +8,7 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from whoosh.fields import DATETIME, KEYWORD, NUMERIC, TEXT, Schema
 from whoosh.index import create_in, open_dir
-from whoosh.qparser import QueryParser
+from whoosh.qparser import QueryParser, MultifieldParser
 from whoosh.query import Every
 
 indexdir = "practicas\\practicas_aii\\whoosh\\4\\indexdir"
@@ -140,45 +140,73 @@ def listar_todas():
         results = searcher.search(Every(), limit=None)
         listar_recetas(results)
 
-# def buscar_por_fecha():
-#     def ddmmyyyy_a_yyyymmdd_int(txt):
-#         m = re.fullmatch(r"(\\d{2})/(\\d{2})/(\\d{4})", txt.strip())
-#         if not m:
-#             return None
-#         d, mo, y = m.groups()
-#         return int(f"{y}{mo}{d}")
+def buscar_por_titulo_o_introduccion():
+    def mostrar_lista(event):
+        ix=open_dir(indexdir)
+        with ix.searcher() as searcher:
+            query = MultifieldParser(["titulo","introduccion"], ix.schema).parse('"'+ str(en.get()) + '"')
+            results = searcher.search(query,limit=3)
+            listar_recetas(results)
+    
+    v = tk.Toplevel()
+    v.title("Búsqueda por Título o Introducción")
 
-#     def buscar(event):
-#         entrada = text.get().strip()
-#         try:
-#             f1, f2 = re.split(r"\\s+", entrada)
-#         except:
-#             messagebox.showerror("Formato inválido", "Usa: DD/MM/AAAA DD/MM/AAAA")
-#             return
+    l1 = tk.Label(v, text="Escriba frase del título o introducción:")
+    l1.pack(side=tk.LEFT)
+    en = tk.Entry(v, width=75)
+    en.bind("<Return>", mostrar_lista)
+    en.pack(side=tk.LEFT)
 
-#         a = ddmmyyyy_a_yyyymmdd_int(f1)
-#         b = ddmmyyyy_a_yyyymmdd_int(f2)
-#         if a is None or b is None:
-#             messagebox.showerror("Formato inválido", "Usa: DD/MM/AAAA DD/MM/AAAA")
-#             return
-#         if a > b:
-#             a, b = b, a
+def buscar_fecha():
+    def mostrar_lista(event):
+        ix=open_dir(indexdir)
+        s = re.compile('(\d{2})/(\d{2})/(\d{4})\s+(\d{2})/(\d{2})/(\d{4})').match(str(en.get()))
+        if s:
+            fecha_i = s.group(3)+s.group(2)+s.group(1)
+            fecha_f = s.group(6)+s.group(5)+s.group(4)
+            with ix.searcher() as searcher:
+                query = QueryParser("fecha", ix.schema).parse('['+fecha_i+' TO '+fecha_f+']')
+                results = searcher.search(query,limit=None)
+                listar_recetas(results)
+        else:
+            messagebox.showerror("ERROR", "formato de rango de fechas incorrecto DD/MM/AAAA DD/MM/AAAA")
 
-#         ix = open_dir(indexdir)
-#         with ix.searcher() as searcher:
-#             qp = QueryParser("fecha_orden", ix.schema)
-#             query = qp.parse(f"[{a} TO {b}]")
-#             results = searcher.search(query, limit=None)
-#             listar_recetas(results)
+    v = tk.Toplevel()
+    v.title("Búsqueda por Fecha")
+    l = tk.Label(v, text="Introduzca el rango de fechas (DD/MM/AAAA DD/MM/AAAA):")
+    l.pack(side=tk.LEFT)
+    en = tk.Entry(v, width=75)
+    en.bind("<Return>", mostrar_lista)
+    en.pack(side=tk.LEFT)
 
-#     ventana = tk.Toplevel()
-#     ventana.title("Búsqueda por fecha (rango)")
-#     label = tk.Label(ventana, text="Introduzca el rango (DD/MM/AAAA DD/MM/AAAA):")
-#     label.pack()
-#     text = tk.Entry(ventana, width=40)
-#     text.bind("<Return>", buscar)
-#     text.pack(side=tk.LEFT)
+def buscar_caracteristicas_y_titulo():
+    def mostrar_lista():
+        with ix.searcher() as searcher:
+            entrada = '"'+str(en.get())+'"' #se ponen comillas porque hay categorías con más de una palabra
+            query = QueryParser("titulo", ix.schema).parse('caracteristicas:'+ entrada +' '+str(en1.get()))
+            results = searcher.search(query,limit=10)
+            listar_recetas(results)
 
+    v = tk.Toplevel()
+    v.title("Búsqueda por características y Título")
+    l = tk.Label(v, text="Seleccione característica a buscar:")
+    l.pack(side=tk.LEFT)
+
+    ix = open_dir("Index")
+    with ix.searcher() as searcher:
+        # lista de todas las categorias disponibles en el campo de caracteristicas
+        lista_caracteristicas = [i.decode('utf-8') for i in searcher.lexicon('caracteristicas')]
+
+    en = tk.Spinbox(v, values=lista_caracteristicas, state="readonly")
+    en.pack(side=tk.LEFT)
+
+    l1 = tk.Label(v, text="Escriba palabras del título:")
+    l1.pack(side=tk.LEFT)
+    en1 = tk.Entry(v, width=75)
+    en1.pack(side=tk.LEFT)
+
+    b = tk.Button(v, text="Buscar", command=mostrar_lista)
+    b.pack(side=tk.LEFT)
 
 def ventana_principal():
     raiz = tk.Tk()
@@ -195,10 +223,9 @@ def ventana_principal():
 
     #BUSCAR
     menubuscar = tk.Menu(menu, tearoff=0)
-    # menubuscar.add_command(label="Detalles", command=buscar_por_detalles)
-    # menubuscar.add_command(label="Temática", command=buscar_por_tematica)
-    # menubuscar.add_command(label="Precio", command=buscar_por_precio)
-    # menubuscar.add_command(label="Número de jugadores", command=buscar_por_numero_jugadores)
+    menubuscar.add_command(label="Título/Introducción", command=buscar_por_titulo_o_introduccion)
+    menubuscar.add_command(label="Fecha", command=buscar_fecha)
+    menubuscar.add_command(label="Características y Título", command=buscar_caracteristicas_y_titulo)
     menu.add_cascade(label="Buscar", menu=menubuscar)
 
     raiz.config(menu=menu)
