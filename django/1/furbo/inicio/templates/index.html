@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+    <style>
+        /* La imagen usa una fuente serif para el H1, que es el default */
+        h1 {
+            font-family: serif;
+        }
+        body {
+            font-family: sans-serif;
+            width: 80%;
+            margin: 2em auto; /* Un poco de margen como en la imagen */
+        }
+        nav a {
+            display: block; /* Hace que cada enlace ocupe su propia línea */
+            margin-bottom: 5px; /* Pequeño espacio entre enlaces */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Inicio</h1>
+
+    <nav>
+        <a href="{% url 'inicio' %}">Inicio</a>
+        <a href="">Última temporada</a>  {#{% url 'ultima_temporada' %} #}
+        <a href="">Equipos</a> {# {% url 'equipos' %} #}
+        <a href="">Cinco estadios con más aforo</a> {# {% url 'estadios' %} #}
+        <a href="{% url 'cargar' %}">Cargar <strong>AVISO: Se borrarán todos los datos</strong></a>
+    </nav>
+
+    <br>
+
+    {% if temporadas is empty %}
+        <p>No hay temporadas almacenadas en la base de datos.</p>
+    {% else %}
+
+    <p>Actualmente tenemos almacenadas {{ temporadas|length }} temporadas:</p>
+
+    {% for temporada in temporadas %}
+        {{ temporada }}<br>
+    {% endfor %}
+
+    {% endif %}
+
+</body>
+</html>
