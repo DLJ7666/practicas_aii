@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block encabezado %}
+<h1> Listado de Pel&iacute;culas Agrupadas por Paises </h1>
+{% endblock %}
+
+{% block contenido %}
+			{% regroup peliculas by pais as grouped %}
+	    	{% for group in grouped %}
+		    	<h3>Pa&iacute;s: {{group.grouper}} ({{group.list|length}} pel&iacute;culas)</h3>
+		    		{% for row in group.list %}
+			    		<dt><b>T&iacute;tulo: </b>{{row.titulo}} ({{row.tituloOriginal}})</dt>
+			    		<dd><b>Pa&iacute;s: </b>{{row.pais}} | <b>Director: </b>{{row.director}} | <b>Fecha de Estreno: </b>{{row.fechaEstreno}} </dd>
+			    		<dd> <b>G&eacute;neros: </b>
+			    		{% for gen in row.generos.all %}
+			    			{{gen.nombre}} 
+			    		{% endfor %}
+			    		</dd>		    
+			{% endfor %}
+		    	</div>
+	    	{% endfor %}
+{% endblock %}

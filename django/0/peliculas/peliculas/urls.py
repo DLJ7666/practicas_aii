@@ -16,7 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from principal import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('',views.inicio),
+    path('carga/',views.carga),
+    path('peliculasporpais/', views.lista_peliculasporpais),
+    path('peliculas/', views.lista_peliculas),
+    path('buscarpeliculasporgenero/', views.buscar_peliculasporgenero),
+    path('buscarpeliculasporfecha/', views.buscar_peliculasporfecha),
 ]

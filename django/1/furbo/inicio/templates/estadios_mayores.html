@@ -32,19 +32,20 @@
         <a href="{% url 'cargar' %}">Cargar <strong>AVISO: Se borrarán todos los datos</strong></a>
     </nav>
 
-    <br>
+	<h2> Cinco Estadios con más Aforo </h2>
 
-    {% if temporadas is empty %}
-        <p>No hay temporadas almacenadas en la base de datos.</p>
-    {% else %}
-
-    <p>Actualmente tenemos almacenadas {{ temporadas|length }} temporadas:</p>
-
-    {% for temporada in temporadas %}
-        {{ temporada }}<br>
-    {% endfor %}
-
-    {% endif %}
+{% block contenido %}
+	<dl>
+		{% for dato in equipos %}
+	  	<dt>
+	  		<strong>{{dato.nombre}}</strong>
+	  		<dd>
+	  		Estadio : {{dato.estadio}} ; Aforo: {{dato.aforo}}
+	    	</dd>
+	    </dt>
+		{% endfor %}
+	</dl>
+{% endblock %}
 
 </body>
 </html>

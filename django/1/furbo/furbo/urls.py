@@ -21,5 +21,9 @@ from inicio import views as inicio_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', inicio_views.index, name='inicio'),
-    path('cargar/', inicio_views.populateDatabase, name='cargar')
+    path('cargar/', inicio_views.populateDatabase, name='cargar'),
+    path('ultima_temporada/', inicio_views.ultima_temporada, name='ultima_temporada'),
+    path('equipos/', inicio_views.lista_equipos, name='equipos'),
+    path('equipos/equipo/<int:id_equipo>/', inicio_views.detalle_equipo, name='detalle_equipo'),
+    path('estadios_mayores/', inicio_views.estadios_mayores, name='estadios_mayores'),
 ]

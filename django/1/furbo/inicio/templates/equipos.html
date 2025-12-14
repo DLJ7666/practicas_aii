@@ -32,19 +32,17 @@
         <a href="{% url 'cargar' %}">Cargar <strong>AVISO: Se borrarán todos los datos</strong></a>
     </nav>
 
-    <br>
+	<h2>Equipos</h2>
 
-    {% if temporadas is empty %}
-        <p>No hay temporadas almacenadas en la base de datos.</p>
-    {% else %}
-
-    <p>Actualmente tenemos almacenadas {{ temporadas|length }} temporadas:</p>
-
-    {% for temporada in temporadas %}
-        {{ temporada }}<br>
-    {% endfor %}
-
-    {% endif %}
+	{% block contenido %}
+        <dl>
+            {% for dato in datos %}
+            <dd>
+                <a href='equipo/{{dato.id}}'>{{dato.nombre}}</a><br>
+            </dd>
+            {% endfor %}
+        </dl>
+    {% endblock %}
 
 </body>
 </html>

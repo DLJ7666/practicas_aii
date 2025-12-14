@@ -7,7 +7,8 @@ import urllib.request
 
 from bs4 import BeautifulSoup
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.db.models import Max
 
 if (not os.environ.get('PYTHONHTTPSVERIFY', '') and
 getattr(ssl, '_create_unverified_context', None)):
@@ -101,3 +102,21 @@ def crearEquipo(nombre,link):
         return False
     else:
         return True
+
+def ultima_temporada(request):
+    #el aggregate devuelve {'anyo__max':2021}
+    anyo = Temporada.objects.all().aggregate(Max('anyo'))['anyo__max']
+    partidos = Partido.objects.filter(jornada__temporada__anyo=anyo)
+    return render(request,'ultima_temporada.html',{'partidos':partidos , 'anyo':anyo})
+
+def lista_equipos(request):
+    equipos=Equipo.objects.all()
+    return render(request,'equipos.html', {'datos':equipos})
+
+def detalle_equipo(request, id_equipo):
+    equipo = get_object_or_404(Equipo, pk=id_equipo)
+    return render(request,'equipo.html',{'equipo':equipo})
+
+def estadios_mayores(request):
+    equipos = Equipo.objects.all().order_by('-aforo')[:5]
+    return render(request,'estadios_mayores.html',{'equipos':equipos})

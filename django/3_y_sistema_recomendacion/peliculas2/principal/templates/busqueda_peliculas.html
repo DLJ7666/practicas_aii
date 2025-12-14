@@ -1,0 +1,37 @@
+{% extends 'master.html' %}
+
+{% block titulo %} B&uacute;squeda de pel&iacute;culas por fecha {% endblock %}	    
+
+{% block contenido %} 
+
+    	<form id="formulario" method="post" action=''>{% csrf_token %}
+    		<fieldset>
+    			<legend>B&uacute;squeda de Pel&iacuteculas</legend>
+    			{{formulario}}
+    			<BR><BR>
+
+    			<input type='submit' value='Realizar B&uacute;squeda'/>
+    		</fieldset>
+    	</form>
+	    
+	    <hr>
+
+	    {% if peliculas %}
+		    <h3> Total de pel&iacute;culas del a&ntilde;o {{anyo}}:  {{ peliculas|length }}</h3>
+		    <dl class="uk-description-list-line">
+
+			{% for row in peliculas %}
+			    <dt>{{row.titulo}}</dt>
+			    <dd>{{row.fecha_estreno}} | <a target="_blank" href="{{row.imdbUrl}}">{{row.imdb_url}}</a></dd>
+			    <dd> Categorias: 
+			    {% for cat in row.categorias.all %}
+			    	{{cat.nombre}} 
+			    {% endfor %}
+			    </dd>		    
+			{% endfor %}
+
+			</dl>
+
+		{% endif %}
+
+{% endblock %}

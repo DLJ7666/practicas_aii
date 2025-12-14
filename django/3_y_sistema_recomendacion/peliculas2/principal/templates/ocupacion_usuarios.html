@@ -1,0 +1,17 @@
+{% extends 'master.html' %}
+
+{% block titulo %} Lista de Usuarios {% endblock %}
+
+{% block contenido %}
+
+	    	{% regroup usuarios by ocupacion as grouped %}
+	    	{% for group in grouped %}
+		    	<h3>Ocupación: {{group.grouper}} ({{group.list|length}} usuarios)</h3>
+		    		<dl>
+		    		{% for user in group.list %}
+						<dt><strong>Id Usuario:</strong> {{user.id_usuario}} | <strong>Edad:</strong> {{user.edad}} | <strong>Codigo Postal:</strong> {{user.codigo_postal}}</dt>
+					{% endfor %}
+				    </dl>
+	    	{% endfor %}
+
+{% endblock %}

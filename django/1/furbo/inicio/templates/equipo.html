@@ -32,19 +32,26 @@
         <a href="{% url 'cargar' %}">Cargar <strong>AVISO: Se borrarán todos los datos</strong></a>
     </nav>
 
-    <br>
+	<h2>{{equipo.nombre}}</h2>
 
-    {% if temporadas is empty %}
-        <p>No hay temporadas almacenadas en la base de datos.</p>
-    {% else %}
-
-    <p>Actualmente tenemos almacenadas {{ temporadas|length }} temporadas:</p>
-
-    {% for temporada in temporadas %}
-        {{ temporada }}<br>
-    {% endfor %}
-
-    {% endif %}
+    {% block contenido %}
+        <dd>
+            <h2>Fundación</h2>
+            {{equipo.anyo_fundacion}}
+        </dd>
+        <dd>
+            <h2>Estadio</h2>
+            {{equipo.estadio}}
+        </dd>
+        <dd>
+            <h2>Aforo</h2>
+            {{equipo.aforo}}
+        </dd>
+        <dd>
+            <h2>Dirección</h2>
+            {{equipo.direccion}}
+        </dd>
+    {% endblock %}
 
 </body>
 </html>

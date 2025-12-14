@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block encabezado %}
+<h1> B&uacute;squeda de Pel&iacute;culas por G&eacute;neros </h1>
+{% endblock %}
+
+{% block contenido %}
+
+
+    	<form id="formulario" method="post" action=''>{% csrf_token %}
+    		{{formulario}}
+    		<input type='submit' value='Realizar B&uacute;squeda'/>
+    	</form>
+	    
+	    <hr>
+
+	    {% if peliculas %}
+		    <h3> Total de Pel&iacute;culas del G&eacute;nero:  {{ peliculas|length }}</h3>
+
+			{% for row in peliculas %}
+			    <dt><b>T&iacute;tulo: </b>{{row.titulo}} ({{row.tituloOriginal}})</dt>
+			    <dd><b>Pa&iacute;s: </b>{{row.pais}} | <b>Director: </b>{{row.director}} | <b>Fecha de Estreno: </b>{{row.fechaEstreno}} </dd>
+			    <dd> <b>G&eacute;neros: </b>
+			    {% for gen in row.generos.all %}
+			    	{{gen.nombre}} 
+			    {% endfor %}
+			    </dd>	    
+			{% endfor %}
+
+			</dl>
+
+		{% endif %}
+	</div>
+{% endblock %}

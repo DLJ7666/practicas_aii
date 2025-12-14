@@ -32,19 +32,17 @@
         <a href="{% url 'cargar' %}">Cargar <strong>AVISO: Se borrarán todos los datos</strong></a>
     </nav>
 
-    <br>
+	<h2>Partidos de la temporada {{anyo}}-{{anyo|add:"1"}}</h2>
 
-    {% if temporadas is empty %}
-        <p>No hay temporadas almacenadas en la base de datos.</p>
-    {% else %}
-
-    <p>Actualmente tenemos almacenadas {{ temporadas|length }} temporadas:</p>
-
-    {% for temporada in temporadas %}
-        {{ temporada }}<br>
-    {% endfor %}
-
-    {% endif %}
+	{% block contenido %}
+			{% regroup partidos by jornada as grouped %}
+	    	{% for group in grouped %}
+		    	<h3>Jornada {{group.grouper.numero}} &nbsp &nbsp {{group.grouper.fecha}}</h3>
+		    		{% for row in group.list %}
+			    		<dd>{{row.equipo_local.nombre}} {{row.goles_local}} - {{row.goles_visitante}} {{row.equipo_visitante.nombre}} </dd>	   
+					{% endfor %}
+	    	{% endfor %}
+	{% endblock %}
 
 </body>
 </html>

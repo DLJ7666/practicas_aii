@@ -1,0 +1,33 @@
+{% extends 'master.html' %}
+
+{% block titulo %} Autor {% endblock %}
+
+
+
+{% block contenido %} 
+     	<h3>Vicente Carrillo</h3>
+
+<hr>
+ 	    <h3>EJERCICIO DE DJANGO </h3>
+	    <p>Se desea construir una pagina web, que permita recomendar a usuarios peliculas en funcion de las puntuaciones que han dado otros usuarios a las peliculas y los gustos de estos.
+Construir el modelo de datos en Django que almacene la informacion siguiente:<br>
+a)	Usuario: IdUsuario, Edad, Sexo(M,F), Ocupacion, CodigoPostal.<br>
+b)	Pelicula: IdPelicula, Titulo, FechaEstreno, IMDbURL, Categorias.<br>
+c)	Categoria: IdCategoria, Nombre.<br>
+d)	Ocupacion: Nombre.<br>
+e)	Puntuacion: IdUsuario, IdPelicula, puntuacion.<br>
+Las puntuaciones son numeros enteros entre 1 y 5.<br><br>
+Poblar la base de datos extrayendo los datos del Dataset100K de Movilens<br>
+     http://grouplens.org/datasets/movielens/100k/<br>
+<br>
+Se pide construir una web con un menu principal en la parte superior de la ventana, que permita las siguientes opciones:<br>
+a)	Cargar la base de datos. Que cargue la base de datos desde los ficheros del dataset de movielens. Debe tener acceso restringido a usuarios logeados.<br>
+b)	Mostrar los usuarios agrupados por ocupacion.<br>
+b)	Mostrar el titulo de las 50 peliculas mejor puntuadas (puntuacion media) con mas de 100 puntuaciones ordenadas de mayor a menor puntuacion media.<br>
+c)	Un formulario que, dado un a&ntilde;o de estreno, muestre todas las peliculas que se hayan estrenado ese a&ntilde;o .<br>
+d)	Un formulario que, dado un idUsuario, muestre todas las peliculas que haya puntuado y su puntuacion.<br>
+</p>
+
+		    <hr>
+
+{% endblock %}
