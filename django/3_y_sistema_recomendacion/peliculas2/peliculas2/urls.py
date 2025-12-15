@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from principal import views as principal_views
+from recomendacion import views as recomendacion_views
 from django.contrib.admin.views.decorators import staff_member_required
 
 
@@ -30,4 +31,9 @@ urlpatterns = [
     path('mejores_peliculas/<int:pag>',principal_views.mostrar_mejores_peliculas, name='mejores_peliculas'),
     path('busqueda_peliculas/',principal_views.mostrar_peliculas_year),
     # path('ingresar/', principal_views.ingresar),
+    path('loadRS/', recomendacion_views.loadRS),
+    path('recomendar_peliculas_usuarios/', recomendacion_views.recomendar_peliculas_usuario_RSusuario, name='recomendar_peliculas_usuarios'),
+    path('recomendar_peliculas_usuarios_items/', recomendacion_views.recomendar_peliculas_usuario_RSitems, name='recomendar_peliculas_usuarios_items'),
+    path('recomendar_usuarios_peliculas/', recomendacion_views.recomendar_usuarios_pelicula, name='recomendar_usuarios_pelicula'),
+    path('peliculas_similares/', recomendacion_views.mostrar_peliculas_parecidas, name='peliculas_similares'),
 ]
