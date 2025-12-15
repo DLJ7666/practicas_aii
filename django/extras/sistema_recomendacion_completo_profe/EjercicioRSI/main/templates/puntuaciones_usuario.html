@@ -1,0 +1,30 @@
+{% extends 'master.html' %}
+
+{% block titulo %} B&uacute;squeda de puntuaciones de usuario {% endblock %}    
+
+{% block contenido %} 
+    	<form id="formulario" method="post" action=''>{% csrf_token %}
+    		<fieldset>
+    			<legend>B&uacute;squeda de Usuarios</legend>
+    			{{formulario}}
+    			<br><br>
+    			<input type='submit' value='Realizar B&uacute;squeda'/>
+    		</fieldset>
+    	</form>
+	    
+	    <hr>
+
+	    {% if puntuaciones %}
+		    <h3> Pel&iacute;culas puntuadas por el usuario {{idusuario}}:  {{ puntuaciones|length }}</h3>
+		    <dl>
+
+			{% for row in puntuaciones %}
+			    <dt>{{row.idPelicula.titulo}}</dt>
+			    <dd>Puntuaci&oacute;n: {{row.puntuacion}}/5</dd>
+			{% endfor %}
+
+			</dl>
+
+		{% endif %}
+
+{% endblock %}

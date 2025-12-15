@@ -1,0 +1,32 @@
+{% extends 'master.html' %}
+
+{% block titulo %} Recomendaci&oacute;n de usuarios para una pel&iacute;cula{% endblock %}	    
+
+{% block contenido %} 
+
+    	<form id="formulario" method="post" action=''>{% csrf_token %}
+    		<fieldset>
+    			<legend>B&uacute;squeda de Pel&iacute;cula</legend>
+    			{{formulario}}
+    			<BR><BR>
+
+    			<input type='submit' value='Realizar B&uacute;squeda'/>
+    		</fieldset>
+    	</form>
+	    
+	    <hr>
+
+	    {% if items %}
+		    <h4> Usuarios recomendados a la pel&iacute;cula {{pelicula.titulo}}:</h4>
+		    <dl class="uk-description-list-line">
+
+			{% for usuario, puntuacion in items %}
+			    <dd><b>Usuario: {{usuario.idUsuario}}  Puntuaci&oacute;n:{{puntuacion | floatformat:"2"}}</b> <br>
+			    edad:{{usuario.edad}} sexo:{{usuario.sexo}} ocupaci&oacute;n:{{usuario.ocupacion.nombre}} CP:{{usuario.codigoPostal}}</dd>     
+			{% endfor %}
+
+			</dl>
+
+		{% endif %}
+
+{% endblock %}
