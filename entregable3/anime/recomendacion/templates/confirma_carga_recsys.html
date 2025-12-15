@@ -1,0 +1,13 @@
+{% extends 'master.html' %}
+
+{% block titulo %}
+<h1> Cargar sistema de recomendación </h1>
+{% endblock %}
+
+  {% block contenido %}
+    <h3>Confirme la carga del sistema de recomendación.</h3>
+    <form id="formulario_recsys" method="post" action='/cargar_recsys/'>{% csrf_token %}
+        <input type='submit' value='Confirmar Carga'/>
+    </form>
+
+  {% endblock %}

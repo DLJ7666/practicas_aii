@@ -1,0 +1,55 @@
+{% extends 'master.html' %}
+
+{% block titulo %}
+    <h1> Buscar Animes por formato </h1>
+{% endblock %}
+
+{% block contenido %}
+
+    <form method="POST" action="">
+        {% csrf_token %}
+        
+        <label for="formato">Selecciona un formato de emisión:</label>
+        
+        <select name="formato" id="formato" required>
+            <option value="" selected disabled>--- Elige una opción ---</option>
+            {% for f in formatos %}
+                <option value="{{ f }}" {% if f == seleccionado %}selected{% endif %}>
+                    {{ f }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Buscar</button>
+    </form>
+
+    <hr>
+
+    {% if animes %}
+        <h3>Total de animes encontrados: {{ total }}</h3>
+        
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Géneros</th>
+                    <th>Formato de emisión</th>
+                    <th>Número de episodios</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for anime in animes %}
+                <tr>
+                    <td>{{ anime.titulo }}</td>
+                    <td>{{ anime.generos }}</td>
+                    <td>{{ anime.formato }}</td>
+                    <td>{{ anime.episodios }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif request.method == 'POST' %}
+        <p>No se encontraron animes para este formato.</p>
+    {% endif %}
+
+{% endblock %}

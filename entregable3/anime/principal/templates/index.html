@@ -1,0 +1,44 @@
+{% extends 'master.html' %}
+
+{% block titulo %} Entregable 3 AII {% endblock %}
+
+
+
+{% block contenido %} 
+     	<h3></h3>
+
+<hr>
+	    <p>Se desea construir una página web que permita recomendar a usuarios animes y otras consultas.
+(1 punto) CONSTRUIR UN MODELO DE DATOS CORRECTO en Django que almacene la
+información siguiente:
+a) Anime: Animeid, Título, Géneros, Formato de emisión (TV, movie,…), Número de
+episodios.
+b) Puntuación: IdUsario, Animeid, Puntuación (1-10)
+Los datos se encuentran en dos ficheros en el Anime Dataset que acompaña este enunciado. Se
+proporcionan en dos formatos (csv y txt delimitado por tabulaciones) para que seleccionéis el
+que os resulte más cómodo.
+Se pide (1 punto) CONSTRUIR UNA WEB CON UN MENÚ PRINCIPAL que permita las
+siguientes opciones:
+a) (2.5 puntos) CARGAR LA BASE DE DATOS. Muestre un formulario de
+confirmación. Si se acepta, borrar la base de datos y volverla a crear con los datos del
+dataset. Después MOSTRAR INFORMACIÓN DE LOS REGISTROS
+ALMACENADOS EN CADA TABLA que hayáis definido en el modelo.
+b) (1 punto) CARGAR RECSYS. Que cargue LOS DATOS NECESARIOS para el
+Sistema de Recomendación y otros apartados.
+c) (1.5 puntos) ANIMES POR FORMATO DE EMISIÓN. Muestre un formulario con un
+una spinbox con la lista de formatos de emisión que hay en la BD. Cuando se seleccione
+uno muestra el total de animes con ese formato de emisión y los datos de cada uno
+(Título, Géneros, Formato de emisión y Número de episodios) ordenados por número de
+episodios de mayor a menor.
+d) (1.5 puntos) ANIMES MÁS POPULARES. Muestre los tres animes que más
+puntuaciones han recibido (Título y número de puntuaciones recibidas). Para cada uno
+de ellos mostrar también los tres animes que más se le parecen (Título y similitud),
+usando la distancia Euclidea como medida de similitud.
+e) (1.5 puntos) RECOMENDAR USUARIOS. Muestre un formulario que permita
+introducir un anime (AnimeId), presente cinco usuarios (IdUsuario, puntuación
+propuesta) a los que se le recomendaría dicho anime. 
+</p>
+
+		    <hr>
+
+{% endblock %}

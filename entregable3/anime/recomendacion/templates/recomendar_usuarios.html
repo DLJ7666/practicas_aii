@@ -1,0 +1,54 @@
+{% extends 'master.html' %}
+
+{% block titulo %}
+<h1> Recomendar usuarios para un anime </h1>
+{% endblock %}
+
+{% block contenido %}
+    
+    <form class="uk-form-horizontal uk-margin-large" method="post">
+        {% csrf_token %}
+        <div class="uk-margin">
+            <label class="uk-form-label" for="anime_id">ID del Anime:</label>
+            <div class="uk-form-controls">
+                <input class="uk-input uk-form-width-medium" id="anime_id" name="anime_id" type="number" placeholder="Ej: 1" required>
+                <button class="uk-button uk-button-primary" type="submit">Buscar</button>
+            </div>
+        </div>
+    </form>
+
+    {% if error %}
+        <div class="uk-alert-danger" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p>{{ error }}</p>
+        </div>
+    {% endif %}
+
+    {% if anime %}
+        <div class="uk-card uk-card-default uk-card-body uk-margin">
+            <h3 class="uk-card-title">Resultados para: {{ anime.titulo }}</h3>
+            
+            {% if recs %}
+                <table border="1" class="uk-table uk-table-striped uk-table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID Usuario</th>
+                            <th>Puntuación Predicha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for score, user_id in recs %}
+                        <tr>
+                            <td>{{ user_id }}</td>
+                            <td>{{ score|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No se encontraron usuarios para recomendar este anime (o no hay suficientes datos).</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+{% endblock %}

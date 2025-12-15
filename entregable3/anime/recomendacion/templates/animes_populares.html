@@ -1,0 +1,35 @@
+{% extends 'master.html' %}
+
+{% block titulo %}
+<h1> Animes más populares </h1>
+{% endblock %}
+
+{% block contenido %}
+    
+    {% if results %}
+        <ul class="uk-list uk-list-divider">
+            {% for item in results %}
+            <li>
+                <div class="uk-card uk-card-default uk-card-body">
+                    <h3 class="uk-card-title">{{ item.titulo }}</h3>
+                    <p><strong>Votos:</strong> {{ item.votos }}</p>
+                    
+                    <h4>Animes similares:</h4>
+                    {% if item.similares %}
+                        <ul class="uk-list uk-list-bullet">
+                            {% for sim in item.similares %}
+                                <li>{{ sim.titulo }} (Similitud: {{ sim.similitud }})</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No se encontraron animes similares o el sistema de recomendación no está cargado.</p>
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No hay datos disponibles.</p>
+    {% endif %}
+
+{% endblock %}
